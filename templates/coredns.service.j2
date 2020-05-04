@@ -1,0 +1,20 @@
+[Unit]
+Description=CoreDNS Service
+Wants=network.target
+After=NetworkManager.service network.service
+
+[Service]
+ExecStart=/opt/coredns/coredns -conf=/opt/coredns/Corefile
+User=coredns
+PermissionsStartOnly=true
+LimitNOFILE=1048576
+LimitNPROC=512
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+ExecReload=/bin/kill -SIGUSR1 $MAINPID
+Restart=on-failure
+WorkingDirectory=/opt/coredns
+Type=simple
+
+[Install]
+WantedBy=default.target

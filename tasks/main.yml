@@ -1,0 +1,120 @@
+---
+
+- name: Create CoreDNS User
+  user:
+    name: coredns
+    system: true
+
+- name: Create CoreDNS Directory
+  file:
+    path: /opt/coredns
+    owner: coredns
+    group: coredns
+    state: directory
+
+
+- name: Download CoreDNS Binary
+  unarchive:
+    src: "{{ coredns_url }}"
+    dest: /opt/coredns
+    owner: coredns
+    remote_src: yes
+    extra_opts:
+      - -P
+
+- name: Deploy CoreDNS SystemD Unit file
+  template:
+    src: coredns.service.j2
+    dest: /etc/systemd/system/coredns.service
+    owner: root
+    group: root
+    mode: 0644
+  register: coredns_service
+
+- name: Deploy CoreDNS Corefile
+  template:
+    src: Corefile.j2
+    dest: /opt/coredns/Corefile
+    owner: coredns
+    group: root
+    mode: 0644
+  register: coredns_corefile
+
+- name: Reload Systemd if Necessary
+  systemd:
+    daemon_reload: yes
+  when: coredns_service.changed
+
+- name: Restart CoreDNS if Necessary
+  service:
+    name: coredns
+    state: restarted
+  when: coredns_service.changed or coredns_corefile.changed
+
+- name: Ensure 53/udp is Open on Firewall
+  firewalld:
+    port: 53/udp
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Ensure 53/tcp is Open on Firewall
+  firewalld:
+    port: 53/tcp
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Ensure 9135/tcp is open on firewall
+  firewalld:
+    port: 9135/tcp
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Ensure 8853/tcp is open on firewall
+  firewalld:
+    port: 8853/tcp
+    zone: public
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: Ensure CoreDNS is Enabled
+  service:
+    name: coredns
+    state: started
+    enabled: yes
+
+- name: Ensure Zerotier-One is Enabled
+  service:
+    name: zerotier-one
+    state: started
+    enabled: yes
+  tags: ["anycast_setup"]
+
+- name: Ensure bird is Enabled
+  service:
+    name: bird
+    state: started
+    enabled: yes
+  tags: ["anycast_setup"]
+
+- name: Deploy dummy interface setup script
+  template:
+    src: anycast_setup.sh.j2
+    dest: /opt/coredns/anycast_setup.sh
+    mode: 0755
+    owner: coredns
+    group: root
+  tags: ["anycast_setup"]
+
+- name: Ensure Anycast runs at boot
+  lineinfile:
+    path: /etc/rc.local
+    line: /opt/coredns/anycast_setup.sh
+    create: yes
+  tags: ["anycast_setup"]

@@ -1,0 +1,45 @@
+coredns_url: https://github.com/coredns/coredns/releases/download/v1.6.7/coredns_1.6.7_linux_amd64.tgz
+master_ip: 45.76.164.105
+anycast_v4_1: 185.187.153.11
+anycast_v4_2: 185.187.152.17
+anycast_v6_1: 2a05:b0c4:1::f
+anycast_v6_2: 2a05:b0c4:1::12
+hosted_zones:
+  - beyondmerewords.com
+  - udp53.co
+  - hasty.email
+  - jwh2.com
+  - jwh2.net
+  - 2be1ask.one
+  - stopbreakingit.net
+  - stopbreakingit.com
+  - johnhasty.com
+  - johnhasty.net
+  - johnhasty.xyz
+  - johnh.work
+  - test-machine.xyz
+  - kalt.dev
+  - kalt.directory
+  - hostmy.video
+  - notspam.co
+  - onthelevel.xyz
+  - notyetconfigured.net
+  - stepintoyourdream.life
+  - stepintoyourdreamlife.com
+  - stepintoyourdreamlife.net
+  - johnhasty.coach
+  - rwbmason.us
+  - sacred.community
+  - sacred.academy
+  - ecdnconfig.sh
+  - beyondwords.xyz
+  - sacredtelegram.com
+  - sacredacademy.org
+  - beyondmerewords.net
+  - sacredtelegram.tech
+  - sacredtelegram.net
+  - tedhasty.com
+  - dreamlife.school
+  - resolv53.net
+  - geo53.com
+  - geo53.net

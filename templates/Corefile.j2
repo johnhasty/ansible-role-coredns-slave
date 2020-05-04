@@ -1,0 +1,16 @@
+(metrics) {
+        prometheus 0.0.0.0:9135
+        errors
+}
+.:53 {
+        {% for domain in hosted_zones %}
+        secondary {{ domain }} {
+                transfer from {{ master_ip }}
+        }
+        {% endfor %}
+                import metrics
+                bufsize 512
+                health :8853
+                cache 86400
+
+}

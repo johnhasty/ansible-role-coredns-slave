@@ -1,0 +1,20 @@
+#! /bin/bash
+
+ip link add dummy0 type dummy
+ip link set dummy0 up
+ip -4 addr add dev dummy0 {{ anycast_v4_1 }}/32
+ip -6 addr add dev dummy0 {{ anycast_v6_1 }}/128
+ip link add dummy1 type dummy
+ip link set dummy1 up
+ip -4 addr add dev dummy1 {{ anycast_v4_2 }}/32
+ip -6 addr add dev dummy1 {{ anycast_v6_2 }}/128
+
+ip -4 rule add from {{ anycast_v4_1 }}/32 table anycast
+ip -4 rule add from {{ anycast_v4_2 }}/32 table anycast
+ip -6 rule add from {{ anycast_v6_1 }}/128 table anycast
+ip -6 rule add from {{ anycast_v6_2 }}/128 table anycast
+
+ip -4 route add default via {{ anycast_v4_router }} table anycast
+ip -6 route add default via {{ anycast_v6_router }} table anycast
+
+systemctl restart bird && systemctl restart coredns
